@@ -66,8 +66,8 @@ def out_of_bounds(obj):
         return True
 
 def scoreboard():
-    font = pg.font.SysFont("arial", 16)
-    score_sprite = font.render(str(score), True, (0,0,0))
+    font = pg.font.SysFont("Stencil", 25)
+    score_sprite = font.render('Score: '+str(score), True, (0,0,0))
     text_rect = score_sprite.get_rect(center=(int(score_widget.get_width()/2), int(HEIGHT - (score_widget.get_height()/2))))
 
     window.blit(score_sprite, text_rect)
@@ -137,7 +137,6 @@ def init_game():
 init_game()
 # min_dist=big_bone.img.get_height()
 running =True
-small_dog_clicked=False
 while running:
     if out_of_bounds(small_bone):
         running = False
@@ -158,25 +157,25 @@ while running:
             running=False
         
         if event.type == pg.MOUSEBUTTONDOWN:
-            pos = pg.mouse.get_pos()
-            if pos[0] <= (WIDTH/2 - small_bone.width/2): #for left side of screen
-                if small_dog.x <= -(small_dog.width) + 20 and not small_dog.clicked:
-                    small_dog.clicked=True
+            if not small_dog.clicked and not big_dog.clicked:
+                pos = pg.mouse.get_pos()
+                if pos[0] <= (WIDTH/2 - small_bone.width/2): #for left side of screen
+                    if small_dog.x <= -(small_dog.width) + 20 and not small_dog.clicked:
+                        small_dog.clicked=True
 
-            if pos[0] >= (WIDTH/2 + small_bone.width/2): #for right side of screen
-                if big_dog.x >= (big_dog.width) - 20 and not big_dog.clicked:
-                    big_dog.clicked=True
+                if pos[0] >= (WIDTH/2 + small_bone.width/2): #for right side of screen
+                    if big_dog.x >= WIDTH - 20 and not big_dog.clicked:
+                        big_dog.clicked=True
                 
     #Small Dog movement     
-    if small_dog.clicked and (small_dog.x + small_dog.width) <(WIDTH/2 - small_bone.width/3) :
+    if small_dog.clicked and (small_dog.x + small_dog.width) <(WIDTH/2 - small_bone.width/3):
         small_dog.y = pos[1]-small_dog.height/2
         small_dog.x += small_dog.dx
 
     else:
         small_dog.clicked=False
-    
-    if not small_dog.clicked and small_dog.x > -(small_dog.width) + 20 :
-        small_dog.x -= small_dog.dxb
+        if small_dog.x >= -(small_dog.width) + 20:
+            small_dog.x -= small_dog.dxb
 
     #Big Dog movement
     if big_dog.clicked and (big_dog.x) > (WIDTH/2 + small_bone.width/3) :
@@ -189,7 +188,7 @@ while running:
     if not big_dog.clicked and big_dog.x < WIDTH - 20 :
         big_dog.x += big_dog.dxb
 
-
+    #Dog vs Bone check
     dog_eat_bone = collision_check(small_dog, small_bone) or collision_check(small_bone, big_dog)
     if dog_eat_bone:
         score += 1
@@ -197,9 +196,3 @@ while running:
         scoreboard()
 
     pg.display.update()
-
-    
-    # keys = pg.key.get_pressed()
-    # if keys[pg.K_SPACE]:
-    #     small_dog.x = (small_dog.x + small_dog.img.get_width()) <(WIDTH/2 - small_bone.img.get_width()/2)
-    #     space_press+=1
