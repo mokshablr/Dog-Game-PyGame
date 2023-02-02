@@ -1,3 +1,8 @@
+# Author : Arjun R Maniyani
+# University : PES University
+# 2nd February, 2023
+
+
 import pygame as pg
 from pygame import mixer
 import time
