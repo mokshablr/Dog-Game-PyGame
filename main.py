@@ -80,6 +80,25 @@ def collision_check(object1, object2):
     distance = math.sqrt(math.pow((x2_cm - x1_cm), 2) + math.pow((y2_cm - y1_cm), 2))
     return distance < ((object1.width + object2.width) / 2)
 
+def gameover_screen():
+    scoreboard()
+    font = pg.font.SysFont("freesansbold", 64)
+    gameover_sprint = font.render("GAME OVER", True, (255, 255, 255))
+    temp_surface = pg.Surface(gameover_sprint.get_size())
+    temp_surface.fill((192, 192, 192))
+    temp_surface.blit(gameover_sprint, (0, 0))
+    window.blit(temp_surface, (WIDTH / 2 - 140, HEIGHT / 2 - 32))
+    pg.display.update()
+
+    time.sleep(5.0)
+    mixer.quit()
+
+def gameover():
+    global running
+    gameover_screen()
+    print('Game Over!')
+    running = False
+
 
 #initializing the game
 def init_game():
@@ -104,7 +123,7 @@ def init_game():
     big_bone_x= (WIDTH / 2) - (big_bone_width / 2)
     big_bone_y= 0
     big_bone_dx= 1.0
-    big_bone_dy= 0.2
+    big_bone_dy= 0.1
     big_bone_relaxation_time= 100
     big_bone=Bone(big_bone_img, big_bone_width, big_bone_height, big_bone_x, big_bone_y, big_bone_dx, big_bone_dy,big_bone_relaxation_time)
 
@@ -146,7 +165,9 @@ while running:
     window.blit(background,(0,0))
     window.blit(score_widget,(0,HEIGHT-score_widget.get_height()))
     small_bone.y += small_bone.dy
+    big_bone.y += big_bone.dy
     small_bone.draw()
+    big_bone.draw()
     small_dog.draw()
     big_dog.draw()
     scoreboard()
@@ -189,10 +210,20 @@ while running:
         big_dog.x += big_dog.dxb
 
     #Dog vs Bone check
-    dog_eat_bone = collision_check(small_dog, small_bone) or collision_check(small_bone, big_dog)
-    if dog_eat_bone:
+    small_dog_eat_bone = collision_check(small_dog, small_bone) 
+    big_dog_eat_bone = collision_check(big_bone, big_dog)
+    big_dog_hurt = collision_check(big_dog, small_bone)
+    small_dog_hurt = collision_check(small_dog, big_bone)
+
+    if small_dog_eat_bone:
         score += 1
         small_bone.y= 0
         scoreboard()
+    elif big_dog_eat_bone:
+        score += 1
+        big_bone.y= 0
+        scoreboard()
+    elif big_dog_hurt:
+        gameover()
 
     pg.display.update()
